@@ -1,6 +1,3 @@
-pip install bs4
-pip install sklearn
-pip install pandas
 import os
 import re
 import csv
