@@ -7,6 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 import streamlit as st
 import pandas as pd
+import base64
 
 @st.cache
 def get_text_from_url(url):
@@ -66,25 +67,27 @@ def app():
     urls_text = st.text_area("URLs", height=200)
     urls = urls_text.splitlines()
 
-    documents = [preprocess_text(get_text_from_url(url)) for url in urls]
+    if st.button("Submit"):
+        documents = [preprocess_text(get_text_from_url(url)) for url in urls]
 
-    similarity_matrix = get_similarity_matrix(documents)
+        similarity_matrix = get_similarity_matrix(documents)
 
-    clusters = cluster_documents(similarity_matrix, 0.5)
+        clusters = cluster_documents(similarity_matrix, 0.5)
 
-    cluster_dict = {"Cluster": [], "URL": []}
-    for cluster_index, cluster in enumerate(clusters):
-        for document_index in cluster:
-            cluster_dict["Cluster"].append(cluster_index)
-            cluster_dict["URL"].append(urls[document_index])
+        cluster_dict = {"Cluster": [], "URL": []}
+        for cluster_index, cluster in enumerate(clusters):
+            for document_index in cluster:
+                cluster_dict["Cluster"].append(cluster_index)
+                cluster_dict["URL"].append(urls[document_index])
 
-    df = pd.DataFrame(cluster_dict)
-    
-    st.table(df)
+        df = pd.DataFrame(cluster_dict)
+        
+        st.table(df)
 
-    csv = df.to_csv(index=False)
-    href = f'<a href="data:file/csv;base64,{b64}" download="clusters.csv">Download CSV File</a>'
-    st.markdown(href, unsafe_allow_html=True)
+        csv = df.to_csv(index=False)
+        b64 = base64.b64encode(csv.encode()).decode() 
+        href = f'<a href="data:file/csv;base64,{b64}" download="clusters.csv">Download CSV File</a>'
+        st.markdown(href, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     app()
