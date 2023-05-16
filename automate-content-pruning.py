@@ -9,7 +9,7 @@ import streamlit as st
 import pandas as pd
 import base64
 
-@st.cache
+@st.cache_data
 def get_text_from_url(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -18,20 +18,20 @@ def get_text_from_url(url):
         tag.decompose()
     return body.text
 
-@st.cache
+@st.cache_data
 def preprocess_text(text):
     text = re.sub(r'[^\w\s]', '', text)
     text = re.sub(r'\d', '', text)
     return text
 
-@st.cache
+@st.cache_data
 def get_similarity_matrix(documents):
     tfidf = TfidfVectorizer(stop_words='english')
     tfidf_matrix = tfidf.fit_transform(documents)
     similarity_matrix = cosine_similarity(tfidf_matrix)
     return similarity_matrix
 
-@st.cache
+@st.cache_data
 def cluster_documents(similarity_matrix, threshold):
     cluster_number = 0
     clusters = []
@@ -48,7 +48,7 @@ def cluster_documents(similarity_matrix, threshold):
 
     return clusters
 
-@st.cache
+@st.cache_data
 def dfs(i, visited, cluster, similarity_matrix, threshold):
     visited[i] = True
     cluster.append(i)
