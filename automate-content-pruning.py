@@ -62,8 +62,9 @@ def dfs(i, visited, cluster, similarity_matrix, threshold):
 def app():
     st.title("Document Cluster Analysis")
 
-    with open("urls.txt", "r") as file:
-        urls = file.read().splitlines()
+    st.subheader("Paste URLs below:")
+    urls_text = st.text_area("URLs", height=200)
+    urls = urls_text.splitlines()
 
     documents = [preprocess_text(get_text_from_url(url)) for url in urls]
 
@@ -82,7 +83,6 @@ def app():
     st.table(df)
 
     csv = df.to_csv(index=False)
-    b64 = base64.b64encode(csv.encode()).decode() 
     href = f'<a href="data:file/csv;base64,{b64}" download="clusters.csv">Download CSV File</a>'
     st.markdown(href, unsafe_allow_html=True)
 
